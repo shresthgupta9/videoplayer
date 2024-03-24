@@ -1,49 +1,70 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import videojs from 'video.js';
+import axios from 'axios';
 
-import VideoJS from '../utils/VideoJS'
+import VideoJS from '../utils/VideoJS';
 
-// import Video from '../static/sample_20mb.mp4';
-// import Video from 'https://res.cloudinary.com/drbi0gcur/video/upload/1711196097233-SampleVideo_1280x720_20mb_kgpogq.mp4';
+const insertStringInCloudinaryURL = (url, insertString) => {
+    const pattern = /upload\/(v\d+\/)/;
+    const replacement = `upload/${insertString}$1`;
+    return url.replace(pattern, replacement);
+}
 
 const Player = () => {
-    const playerRef = React.useRef(null);
+    const [videoJsOptions, setVideoJsOptions] = useState(null)
 
-    const videoJsOptions = {
-        autoplay: false,
-        controls: true,
-        responsive: true,
-        fluid: true,
-        playbackRates: [0.5, 1, 1.5, 2],
-        sources: [
-            {
-                src: 'https://res.cloudinary.com/drbi0gcur/video/upload/q_100/v1711288022/1711288010666-Sample_1080p_seujcd.mp4',
-                type: 'video/mp4',
-                label: '1080p',
-            },
-            {
-                src: 'https://res.cloudinary.com/drbi0gcur/video/upload/q_60/v1711288022/1711288010666-Sample_1080p_seujcd.mp4',
-                type: 'video/mp4',
-                label: '720p',
-            },
-            {
-                src: 'https://res.cloudinary.com/drbi0gcur/video/upload/q_30/v1711288022/1711288010666-Sample_1080p_seujcd.mp4',
-                type: 'video/mp4',
-                label: '540p',
-            },
-            {
-                src: 'https://res.cloudinary.com/drbi0gcur/video/upload/q_15/v1711288022/1711288010666-Sample_1080p_seujcd.mp4',
-                type: 'video/mp4',
-                label: '360p',
-            },
-            {
-                src: 'https://res.cloudinary.com/drbi0gcur/video/upload/q_auto/v1711288022/1711288010666-Sample_1080p_seujcd.mp4',
-                type: 'video/mp4',
-                label: 'auto',
-                selected: true,
-            },
-        ]
-    };
+    // const token = localStorage.getItem('accessToken');
+    // const headers = { "Authorization": `JWT ${token}`, 'Content-Type': 'application/json' };
+
+    const handleData = async () => {
+        await axios.get(`${process.env.REACT_APP_HOST_NAME}/movie/watch`)
+            .then(res => { return res.data })
+            .then(data => {
+                const options = {
+                    autoplay: false,
+                    controls: true,
+                    responsive: true,
+                    fluid: true,
+                    playbackRates: [0.5, 1, 1.5, 2],
+                    sources: [
+                        {
+                            src: data.data.url,
+                            type: 'video/mp4',
+                            label: '1080p',
+                            selected: true,
+                        },
+                        {
+                            src: insertStringInCloudinaryURL(data.data.url, "q_60/"),
+                            type: 'video/mp4',
+                            label: '720p',
+                        },
+                        {
+                            src: insertStringInCloudinaryURL(data.data.url, "q_30/"),
+                            type: 'video/mp4',
+                            label: '540p',
+                        },
+                        {
+                            src: insertStringInCloudinaryURL(data.data.url, "q_15/"),
+                            type: 'video/mp4',
+                            label: '360p',
+                        },
+                        {
+                            src: insertStringInCloudinaryURL(data.data.url, "q_auto/"),
+                            type: 'video/mp4',
+                            label: 'auto',
+                            selected: true,
+                        },
+                    ]
+                };
+                setVideoJsOptions(options)
+                setLoading(false)
+
+            });
+    }
+
+    const [loading, setLoading] = useState(true);
+
+    const playerRef = React.useRef(null);
 
     const handlePlayerReady = (player) => {
         playerRef.current = player;
@@ -58,14 +79,22 @@ const Player = () => {
         });
     };
 
+    useEffect(() => {
+        handleData();
+    }, [])
+
     return (
         <>
             <div>Rest of app here</div>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-                <div style={{ width: "800px" }}>
-                    <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+            {loading ?
+                <div>loading</div> :
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div style={{ width: "800px" }}>
+                        <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+                    </div>
                 </div>
-            </div>
+            }
+
             <div>Rest of app here</div>
         </>
     );

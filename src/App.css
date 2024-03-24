@@ -3,5 +3,17 @@
 }
 
 .video-js {
-  font-size: 15px;
+  font-size: 20px;
+}
+
+.vjs-menu-content .vjs-menu-item {
+  overflow: hidden;
+}
+
+.vjs-picture-in-picture-control .vjs-control .vjs-button {
+  color: white;
+}
+
+.vjs-playback-rate .vjs-menu-button .vjs-menu-button-popup .vjs-control .vjs-button {
+  color: white;
 }

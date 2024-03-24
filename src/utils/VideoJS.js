@@ -9,6 +9,7 @@ const VideoJS = (props) => {
     const playerRef = React.useRef(null);
     const { options, onReady } = props;
 
+    console.log(props);
     React.useEffect(() => {
 
         // Make sure Video.js player is only initialized once
@@ -24,13 +25,19 @@ const VideoJS = (props) => {
                 onReady && onReady(player);
             });
 
+            // Do not change this!!!!!!!!!!
+            player.controlBar.removeChild('playbackRateMenuButton');
+            player.controlBar.removeChild('pictureInPictureToggle');
+            player.controlBar.removeChild('fullscreenToggle');
             player.controlBar.addChild('QualitySelector');
+            player.controlBar.addChild('playbackRateMenuButton');
+            player.controlBar.addChild('pictureInPictureToggle');
+            player.controlBar.addChild('fullscreenToggle');
 
             // You could update an existing player in the `else` block here
             // on prop change, for example:
         } else {
             const player = playerRef.current;
-
             player.autoplay(options.autoplay);
             player.src(options.sources);
         }
