@@ -1,23 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import 'video.js/dist/video-js.css'
+import './App.css'
+
+import Player from './components/Player';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <div>Hello. go to /watch for video player</div>,
+    errorElement: <div>404 Not Found</div>
+  },
+  {
+    path: '/watch',
+    element: <Player />,
+    errorElement: <div>404 Not Found</div>
+  }
+]);
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router} />
     </div>
   );
 }
